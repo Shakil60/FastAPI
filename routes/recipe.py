@@ -8,14 +8,6 @@ from schemas.recipe import RecipeCreate, RecipeResponse
 from services import recipe_service, user_service
 from services.auth_service import get_current_user
 
-INITIAL_RECIPES = [
-    {"id": 1, "title": "Quiche lorraine", "duration": 60, "servings": 6, "owner_id": 1},
-    {"id": 2, "title": "Boeuf bourguignon", "duration": 180, "servings": 6, "owner_id": 1},
-    {"id": 3, "title": "Ratatouille", "duration": 75, "servings": 4, "owner_id": 1},
-    {"id": 4, "title": "Crêpes sucrées", "duration": 30, "servings": 4, "owner_id": 1},
-    {"id": 5, "title": "Gratin dauphinois", "duration": 90, "servings": 6, "owner_id": 1},
-]
-
 router = APIRouter(prefix="/recipes", tags=["Recipes"])
 
 # Récupère une recette (404 si absente)

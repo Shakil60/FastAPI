@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Base SQLite stockée dans le fichier recipe.db à la racine du projet
-DATABASE_URL = f"sqlite:///./recipe.db"
+from config import settings
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# pool_pre_ping évite les erreurs sur des connexions fermées par le serveur PostgreSQL
+engine = create_engine(settings.sqlalchemy_url, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 

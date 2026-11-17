@@ -6,6 +6,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 
+from config import settings
 from database import get_db
 
 from schemas.user import UserCreate
@@ -16,10 +17,10 @@ password_hash = PasswordHash.recommended()
 # Récupère le token envoyé dans le header "Authorization: Bearer <token>"
 bearer_scheme = HTTPBearer()
 
-# Paramètres JWT
-SECRET_KEY = "test_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Paramètres JWT (lus depuis l'environnement)
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
