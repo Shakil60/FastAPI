@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Même moteur qu'en production (PostgreSQL 16)
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: recipe
+          POSTGRES_PASSWORD: recipe
+          POSTGRES_DB: recipe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://recipe:recipe@localhost:5432/recipe
+      SECRET_KEY: ci-secret-key-not-used-in-production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+          cache-dependency-path: requirements*.txt
+
+      - name: Installer les dépendances
+        run: pip install -r requirements-dev.txt
+
+      # Vérifie que les migrations s'appliquent sur une base vide, comme au premier déploiement
+      - name: Migrations Alembic
+        run: alembic upgrade head
+
+      # Vérifie que les modèles et les migrations sont synchronisés
+      - name: Aucune migration manquante
+        run: alembic check
+
+      - name: Tests
+        run: pytest -v
